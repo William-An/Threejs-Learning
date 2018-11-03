@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset=utf-8>
+    <title>Drawing Line</title>
+    <style>
+        body {
+            margin: 0;
+        }
+
+        canvas {
+            width: 100%;
+            height: 100%
+        }
+
+    </style>
+</head>
+
+<body>
+    <script src="js/three.js"></script>
+    <script>
+        var MAX_POINTS = 500;
+        var renderer, scene, camera;
+        var line;
+        var result = [];
+
+        init();
+        animate();
+
+        function init() {
+            // Set up scene and camera
+            scene = new THREE.Scene();
+            camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 10000);
+            camera.position.set(0, 0, 1000);
+
+            // Set up renderer
+            renderer = new THREE.WebGLRenderer();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            document.body.appendChild(renderer.domElement);
+
+            // Create geometry
+            geometry = new THREE.BufferGeometry;
+
+            // Create material
+            material = new THREE.LineBasicMaterial({
+                color: 0xff0000,
+                linewidth: 2
+            });
+
+            var positions = new Float32Array(MAX_POINTS * 3);
+            geometry.addAttribute('position', new THREE.BufferAttribute(positions, 3));
+
+            // Drawcalls
+            drawCount = 2; // Draw the first two points
+            geometry.setDrawRange(0, drawCount);
+
+            // Create line
+            line = new THREE.Line(geometry, material);
+            scene.add(line);
+            updatePositions();
+        }
+
+        function updatePositions() {
+            var positions = line.geometry.attributes.position.array;
+            var x = y = z = index = 0;
+            for (var i = 0; i < MAX_POINTS; i++) {
+                // Update each vertice
+                positions[index++] = x;
+                positions[index++] = y;
+                positions[index++] = z;
+                x += (Math.random() - 0.5) * 30;
+                y += (Math.random() - 0.5) * 30;
+                z += (Math.random() - 0.5) * 30;
+            }
+        }
+
+        // Render animation
+        function animate() {
+            requestAnimationFrame(animate); // Callback fn
+            drawCount = (drawCount + 1) % MAX_POINTS;
+            // Render everytime refresh the screen
+            // The vertices data are already generated at the time drawCount = n * MAX_POINTS
+            // The initiate generation of vertices is in the init()
+            line.geometry.setDrawRange(0, drawCount);
+            if (drawCount === 0) {
+                // TODO Save previously generated lines
+                // Save previously drawn line
+                // result = result.concat([line.clone()]);
+                // periodically, generate new data
+                updatePositions();
+                line.geometry.attributes.position.needsUpdate = true; // required after the first render
+                line.material.color.setHSL(Math.random(), 1, 0.5);
+            }
+            renderer.render(scene, camera);
+        }
+        animate();
+
+    </script>
+</body>
+
+</html>

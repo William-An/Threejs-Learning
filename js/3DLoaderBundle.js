@@ -4,7 +4,6 @@ require('../node_modules/three/examples/js/loaders/GLTFLoader');
 
 // Set up scene and camera
 var scene = new THREE.Scene();
-scene.background = new THREE.Color( 0xffffff );
 var camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 1000);
 camera.position.set(0, 0, 100);
 camera.lookAt(0, 0, 0);
@@ -30,6 +29,12 @@ loader.load("3Dfiles/scene.gltf", function (gltf) {
 }, undefined, function (err) {
     console.error(err);
 })
+
+// Add light
+var light = new THREE.PointLight(0xFFFFFF);
+/* position the light so it shines on the cube (x, y, z) */
+light.position.set(50, 0, 50);
+scene.add(light);
 
 // Render animation
 function animate() {

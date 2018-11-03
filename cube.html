@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
-	<head>
+
+<head>
     <meta charset=utf-8>
     <title>Escaping Cube</title>
     <style>
@@ -12,6 +13,7 @@
             width: 100%;
             height: 100%
         }
+
     </style>
 </head>
 
@@ -26,13 +28,21 @@
         document.body.appendChild(renderer.domElement);
 
         var geometry = new THREE.BoxGeometry(1, 1, 1, 4, 4, 4);
-        var material = new THREE.MeshBasicMaterial({
-            color: 0x00ff00
+        var material = new THREE.MeshLambertMaterial({
+            color: "#7833aa"
         });
         var cube = new THREE.Mesh(geometry, material);
         scene.add(cube);
 
-        // camera.position.z = 10;
+        // Add light
+        var light = new THREE.PointLight(0xFFFFFF, 1.5);
+        light.position.set(10, 0, 80);
+        scene.add(light);
+
+        var light = new THREE.PointLight(0xFFFFFF, 1.5);
+        light.position.set(25, 0, -80);
+        scene.add(light);
+
 
         // Render animation
         function animate() {
@@ -44,6 +54,8 @@
             renderer.render(scene, camera);
         }
         animate();
+
     </script>
 </body>
+
 </html>

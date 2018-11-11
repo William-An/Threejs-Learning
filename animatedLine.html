@@ -18,6 +18,7 @@
 </head>
 
 <body>
+    <a href="/index.html">Back to Index</a>
     <script src="js/three.js"></script>
     <script>
         var MAX_POINTS = 500;
@@ -31,7 +32,7 @@
         function init() {
             // Set up scene and camera
             scene = new THREE.Scene();
-            camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 10000);
+            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 10000);
             camera.position.set(0, 0, 1000);
 
             // Set up renderer
@@ -45,7 +46,7 @@
             // Create material
             material = new THREE.LineBasicMaterial({
                 color: 0xff0000,
-                linewidth: 2
+                linewidth: 1
             });
 
             var positions = new Float32Array(MAX_POINTS * 3);

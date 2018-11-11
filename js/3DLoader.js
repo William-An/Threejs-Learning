@@ -10,6 +10,9 @@ camera.lookAt(0, 0, 0);
 // Set up renderer
 var renderer = new THREE.WebGLRenderer();
 renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.domElement.onresize = function(){
+    renderer.setSize(window.innerWidth, window.innerHeight);
+}
 document.body.appendChild(renderer.domElement);
 
 // Instantiate loader

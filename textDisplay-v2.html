@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset=utf-8>
+    <title>Text Display with TextGeometry</title>
+    <style>
+        body {
+            margin: 0;
+        }
+
+        canvas {
+            width: 100%;
+            height: 100%
+        }
+    </style>
+</head>
+
+<body>
+    <script src="js/three.js"></script>
+    <script>
+        var scene, camera, renderer, light;
+        var mesh;
+        // const msg = "NeX-Studio";
+        // Set up scene
+        scene = new THREE.Scene();
+
+        // Set up camera
+        var width = window.innerWidth;
+        var height = window.innerHeight;
+        // camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 10000);
+        camera = new THREE.OrthographicCamera(width / -2, width / 2, height / 2, height / -2, 0.1, 10000);
+        camera.position.z = 500;
+        // camera.rotation.x = - Math.PI/4;    // 45 degree look from above
+
+        // Set up renderer
+        renderer = new THREE.WebGLRenderer();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
+
+        // Set up text
+        var loader = new THREE.FontLoader();
+
+        loader.load('/node_modules/three/examples/fonts/helvetiker_regular.typeface.json', function(font) {
+
+            var text = new THREE.TextGeometry('E', {
+                font: font,
+                size: 150,
+                height: 50,
+                curveSegments: 12,
+                bevelSegments: 5
+            });
+            text.computeBoundingBox();
+            text.computeVertexNormals();
+            var centerOffset = -0.5 * (text.boundingBox.max.x - text.boundingBox.min.x);
+
+            var material = new THREE.MeshStandardMaterial({
+                color: (new THREE.Color('skyblue')).getHex()
+            });
+
+            text = new THREE.BufferGeometry().fromGeometry(text);
+            mesh = new THREE.Mesh(text, material);
+            mesh.position.x = centerOffset;
+            mesh.rotation.y = -Math.PI / 4;
+            mesh.rotation.x = Math.PI / 4;
+            scene.add(mesh);
+        });
+
+        // Add light
+        /*light = new THREE.AmbientLight( 0xffffff);
+        light = new THREE.DirectionalLight(0xffffff, 1);
+        light.position.x = 1;
+        light.position.y = 1;
+        light.position.z = 1;
+        scene.add(light); */
+
+        var rectLight = new THREE.RectAreaLight(0xffffff, 2, 100, 100);
+        rectLight.position.set(0, 0, 200);
+        rectLight.rotation.set(Math.PI/4, 0, 0);
+        rectLight.lookAt(0, 0, 1);
+        scene.add( rectLight );
+        var helper = new THREE.RectAreaLightHelper(rectLight);
+        scene.add(helper);
+
+        var step = 0.1;
+
+        // Render animation
+        function animate() {
+            requestAnimationFrame(animate); // Callback fn
+            renderer.render(scene, camera);
+            if(rectLight.intensity > 7)
+                step = -step;
+            else if(rectLight.intensity < 2)
+                step = -step;
+            rectLight.intensity += step;
+            // mesh.rotation.x += 0.01;
+        }
+
+        animate();
+    </script>
+</body>
+
+</html>

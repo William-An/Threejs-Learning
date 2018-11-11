@@ -51,29 +51,26 @@
         var tetrahedron = new THREE.Mesh(tetraGeo, boxMaterial);
         scene.add(tetrahedron);
         
-        var light = new THREE.PointLight(0xFFFF00, 4);
-        light.position.set(10, 0, 300);
-        scene.add(light);
-        var count = 0;
+        var frontLight = new THREE.PointLight(0xFFFF00, 4);
+        frontLight.position.set(10, 0, 100);
+        
+        var backLight = new THREE.PointLight(0xFFFF00, 4);
+        backLight.position.set(-10, 0, -100);
+        
+        var leftLight = new THREE.PointLight(0xFFFF00, 4);
+        leftLight.position.set(0, 100, 0);
+        
+        var rightLight = new THREE.PointLight(0xFFFF00, 4);
+        rightLight.position.set(0, -100, 0);
+        
+        scene.add(frontLight);
+        scene.add(backLight);
+        scene.add(leftLight);
+        scene.add(rightLight);
         function animate(){
             requestAnimationFrame(animate);
-            count = count + 1;
             tetrahedron.rotation.z += 0.05;
             tetrahedron.rotation.x += 0.05;
-            // Every 60 frame
-            if(count%60 == 0){
-                light.color = new THREE.Color(
-                    Math.random(),
-                    Math.random(),
-                    Math.random()
-                );
-                for(var i = 0, l = tetraGeo.vertices.length; i < l; i++){
-                    tetraGeo.vertices[i].x += -10 + Math.random() * 20;
-                    tetraGeo.vertices[i].y += -10 + Math.random() * 20;
-                }
-                tetraGeo.verticesNeedUpdate = true;
-                count = 0;
-            }
             controls.update();
             renderer.render(scene, camera);
         }

@@ -24,7 +24,8 @@
         var MAX_POINTS = 500;
         var renderer, scene, camera;
         var line;
-        var result = [];
+        var bufferLength = 100;
+        var geoBuffer = [], materialBuffer = [], meshBuffer = [];
 
         init();
         animate();
@@ -41,14 +42,14 @@
             document.body.appendChild(renderer.domElement);
 
             // Create geometry
-            geometry = new THREE.BufferGeometry;
+            geometry = new THREE.BufferGeometry();
 
             // Create material
             material = new THREE.LineBasicMaterial({
                 color: 0xff0000,
                 linewidth: 1
             });
-
+                
             var positions = new Float32Array(MAX_POINTS * 3);
             geometry.addAttribute('position', new THREE.BufferAttribute(positions, 3));
 
@@ -60,6 +61,12 @@
             line = new THREE.Line(geometry, material);
             scene.add(line);
             updatePositions();
+        }
+        
+        function resize(){
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
         }
 
         function updatePositions() {
@@ -75,27 +82,39 @@
                 z += (Math.random() - 0.5) * 30;
             }
         }
+    
 
+        var version;
         // Render animation
         function animate() {
             requestAnimationFrame(animate); // Callback fn
             drawCount = (drawCount + 1) % MAX_POINTS;
+            version = line.geometry.attributes.position.version;
             // Render everytime refresh the screen
             // The vertices data are already generated at the time drawCount = n * MAX_POINTS
             // The initiate generation of vertices is in the init()
             line.geometry.setDrawRange(0, drawCount);
+            for(var i = 0; i < version; i++)
+                meshBuffer[i].geometry.setDrawRange(0, MAX_POINTS);
             if (drawCount === 0) {
-                // TODO Save previously generated lines
+                // Save previously generated lines
                 // Save previously drawn line
-                // result = result.concat([line.clone()]);
+                geoBuffer.push((new THREE.BufferGeometry()).copy(line.geometry));
+                materialBuffer.push((new THREE.LineBasicMaterial()).copy(line.material));
+                meshBuffer.push(new THREE.Line(geoBuffer[version], materialBuffer[version]));
+                scene.add(meshBuffer[version]);
+                
                 // periodically, generate new data
                 updatePositions();
                 line.geometry.attributes.position.needsUpdate = true; // required after the first render
+                console.log(line.geometry.attributes.position.version);
                 line.material.color.setHSL(Math.random(), 1, 0.5);
             }
             renderer.render(scene, camera);
         }
+        
         animate();
+        window.addEventListener('resize', resize);
 
     </script>
 </body>
